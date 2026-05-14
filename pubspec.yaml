@@ -1,0 +1,93 @@
+﻿name: kvs
+description: Karnataka Vijaya Sena – Political Movement App
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.11.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # ── Supabase ──────────────────────────────────────────────────────────
+  supabase_flutter: ^2.9.0
+
+  # ── State management ──────────────────────────────────────────────────
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # ── Navigation ────────────────────────────────────────────────────────
+  go_router: ^14.8.1
+
+  # ── Local storage ─────────────────────────────────────────────────────
+  flutter_secure_storage: ^9.2.4
+  hive_flutter: ^1.1.0
+  shared_preferences: ^2.3.5
+
+  # ── Media ─────────────────────────────────────────────────────────────
+  image_picker: ^1.1.2
+  file_picker: ^8.3.7
+  permission_handler: ^11.4.0
+  record: ^5.1.2
+  audioplayers: ^6.1.0
+  video_player: ^2.9.3
+  cached_network_image: ^3.4.1
+
+  # ── HTTP (MSG91 OTP) ───────────────────────────────────────────────────
+  http: ^1.3.2
+
+  # ── UI & UX ───────────────────────────────────────────────────────────
+  google_fonts: ^6.2.1
+  lottie: ^3.3.1
+  flutter_svg: ^2.0.17
+  shimmer: ^3.0.0
+  pin_code_fields: ^8.0.1
+  intl: ^0.20.2
+  timeago: ^3.7.0
+
+  # ── Location ──────────────────────────────────────────────────────────
+  geolocator: ^13.0.2
+  geocoding: ^3.0.0
+
+  # ── Push Notifications (FCM only) ─────────────────────────────────────
+  firebase_core: ^3.13.1
+  firebase_messaging: ^15.2.5
+
+  # ── Utilities ─────────────────────────────────────────────────────────
+  uuid: ^4.5.1
+  crypto: ^3.0.6
+  url_launcher: ^6.3.1
+  share_plus: ^10.1.4
+  connectivity_plus: ^6.1.3
+  package_info_plus: ^8.3.0
+  flutter_dotenv: ^5.2.1
+  logger: ^2.5.0
+  equatable: ^2.0.7
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+  collection: ^1.19.1
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.15
+  riverpod_generator: ^2.6.1
+  freezed: ^2.5.8
+  json_serializable: ^6.9.3
+  # hive_generator omitted — conflicts with freezed's source_gen ^2.0.0
+  # Hive adapters will be written manually
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - .env
+    - assets/images/
+    - assets/icons/
+    - assets/lottie/
