@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join | Yuva Bharata Sena</title>
+    <style>
+      :root {
+        --blue: #0d47a1;
+        --text: #14324b;
+        --bg: #f5f9ff;
+        --muted: #5f6b7a;
+        --card: #ffffff;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(160deg, #eef4ff, #f9fbff);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .wrap {
+        width: 100%;
+        max-width: 560px;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(20, 50, 75, 0.08);
+      }
+      h1 {
+        margin: 0 0 8px;
+      }
+      p {
+        margin: 0 0 20px;
+        color: var(--muted);
+      }
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+      .field {
+        margin-bottom: 14px;
+      }
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #dbe4f2;
+        border-radius: 8px;
+        font-size: 15px;
+      }
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.12);
+      }
+      button {
+        border: 0;
+        background: var(--blue);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .msg {
+        margin-top: 12px;
+        color: #1b7f3a;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="card">
+        <h1>Join Yuva Bharata Sena</h1>
+        <p>Fill your details to continue.</p>
+
+        <form id="joinForm">
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" name="name" required />
+          </div>
+          <div class="field">
+            <label for="phone">Phone Number</label>
+            <input id="phone" name="phone" type="tel" minlength="10" maxlength="10" pattern="[6-9][0-9]{9}" required />
+          </div>
+          <div class="field">
+            <label for="district">District</label>
+            <select id="district" name="district" required>
+              <option value="">Select district</option>
+              <option>Bagalkot</option>
+              <option>Ballari</option>
+              <option>Belagavi</option>
+              <option>Bengaluru Rural</option>
+              <option>Bengaluru Urban</option>
+              <option>Bidar</option>
+              <option>Chamarajanagara</option>
+              <option>Chikkaballapur</option>
+              <option>Chikkamagaluru</option>
+              <option>Chitradurga</option>
+              <option>Dakshina Kannada</option>
+              <option>Davanagere</option>
+              <option>Dharwad</option>
+              <option>Gadag</option>
+              <option>Hassan</option>
+              <option>Haveri</option>
+              <option>Kalaburagi</option>
+              <option>Kodagu</option>
+              <option>Kolar</option>
+              <option>Koppal</option>
+              <option>Mandya</option>
+              <option>Mysuru</option>
+              <option>Raichur</option>
+              <option>Ramanagara</option>
+              <option>Shivamogga</option>
+              <option>Tumakuru</option>
+              <option>Udupi</option>
+              <option>Uttara Kannada</option>
+              <option>Vijayapura</option>
+              <option>Yadgir</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="taluk">Taluk</label>
+            <input id="taluk" name="taluk" required />
+          </div>
+          <button type="submit">Submit</button>
+        </form>
+        <div class="msg" id="msg">Form submitted. We will connect this to API later.</div>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById('joinForm');
+      const msg = document.getElementById('msg');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!form.reportValidity()) return;
+        msg.style.display = 'block';
+        form.reset();
+      });
+    </script>
+  </body>
+</html>
