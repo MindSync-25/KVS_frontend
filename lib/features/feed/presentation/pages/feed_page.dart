@@ -34,9 +34,9 @@ class FeedPost {
 final _stubFeed = [
   FeedPost(
     id: '1',
-    title: 'KVS Special Drive – Report Road Issues This Week',
+    title: 'YBS Special Drive – Report Road Issues This Week',
     body: 'ಈ ವಾರ ರಸ್ತೆ ದುರಸ್ತಿ ಅಭಿಯಾನ ನಡೆಯಲಿದೆ. Join the campaign to report road damage across Karnataka before 15 May.',
-    authorName: 'KVS Central',
+    authorName: 'YBS Central',
     type: PostType.announcement,
     likes: 428,
     comments: 64,
@@ -45,7 +45,7 @@ final _stubFeed = [
   FeedPost(
     id: '2',
     title: 'Volunteer Training – Bengaluru Urban',
-    body: 'All volunteers in Bengaluru Urban district are invited for leadership training on 18 May at KVS Office, Rajajinagar.',
+    body: 'All volunteers in Bengaluru Urban district are invited for leadership training on 18 May at YBS Office, Rajajinagar.',
     authorName: 'District Lead – Ravi Kumar',
     type: PostType.event,
     likes: 211,

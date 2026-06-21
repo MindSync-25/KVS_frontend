@@ -7,6 +7,64 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/extensions/locale_extensions.dart';
 import '../providers/auth_provider.dart';
 
+// SharedPreferences key for the user's home state
+const _kPrefState = 'ybs_selected_state';
+
+// All Indian states and union territories
+const _kIndianStates = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar',
+  'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana',
+  'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala',
+  'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya',
+  'Mizoram', 'Nagaland', 'Odisha', 'Punjab',
+  'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana',
+  'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+  'Andaman & Nicobar', 'Chandigarh', 'Dadra & Nagar Haveli',
+  'Daman & Diu', 'Delhi', 'Jammu & Kashmir', 'Ladakh',
+  'Lakshadweep', 'Puducherry',
+];
+
+// State name in each region's native script — shows personalised pride
+const _kStateNativeNames = <String, String>{
+  'Andhra Pradesh': 'ఆంధ్ర ప్రదేశ్',
+  'Arunachal Pradesh': 'अरुणाचल प्रदेश',
+  'Assam': 'অসম',
+  'Bihar': 'बिहार',
+  'Chhattisgarh': 'छत्तीसगढ़',
+  'Goa': 'Goa',
+  'Gujarat': 'ગુજરાત',
+  'Haryana': 'हरियाणा',
+  'Himachal Pradesh': 'हिमाचल प्रदेश',
+  'Jharkhand': 'झारखंड',
+  'Karnataka': 'ಕರ್ನಾಟಕ',
+  'Kerala': 'കേരളം',
+  'Madhya Pradesh': 'मध्य प्रदेश',
+  'Maharashtra': 'महाराष्ट्र',
+  'Manipur': 'মণিপুর',
+  'Meghalaya': 'Meghalaya',
+  'Mizoram': 'Mizoram',
+  'Nagaland': 'Nagaland',
+  'Odisha': 'ଓଡ଼ିଶା',
+  'Punjab': 'ਪੰਜਾਬ',
+  'Rajasthan': 'राजस्थान',
+  'Sikkim': 'Sikkim',
+  'Tamil Nadu': 'தமிழ்நாடு',
+  'Telangana': 'తెలంగాణ',
+  'Tripura': 'ত্রিপুরা',
+  'Uttar Pradesh': 'उत्तर प्रदेश',
+  'Uttarakhand': 'उत्तराखंड',
+  'West Bengal': 'পশ্চিমবঙ্গ',
+  'Andaman & Nicobar': 'अंडमान',
+  'Chandigarh': 'ਚੰਡੀਗੜ੍ਹ',
+  'Dadra & Nagar Haveli': 'दादरा',
+  'Daman & Diu': 'Daman',
+  'Delhi': 'दिल्ली',
+  'Jammu & Kashmir': 'जम्मू-कश्मीर',
+  'Ladakh': 'लद्दाख़',
+  'Lakshadweep': 'Lakshadweep',
+  'Puducherry': 'புதுச்சேரி',
+};
+
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
 
@@ -17,12 +75,24 @@ class OnboardingPage extends ConsumerStatefulWidget {
 class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  String _selectedState = '';
 
   Future<void> _proceed(bool isMember) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(AppStrings.prefOnboarded, true);
+    if (_selectedState.isNotEmpty) {
+      await prefs.setString(_kPrefState, _selectedState);
+    }
     ref.read(pendingMemberProvider.notifier).state = isMember;
     if (mounted) context.go(AppStrings.routePhone);
+  }
+
+  void _onStateSelected(String state) {
+    setState(() => _selectedState = state);
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -33,7 +103,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLast = _currentPage == 2;
+    final isLast = _currentPage == 3;
+    final displayState =
+        _selectedState.isEmpty ? 'Your State' : _selectedState;
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Column(
@@ -43,9 +115,14 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               controller: _pageController,
               onPageChanged: (i) => setState(() => _currentPage = i),
               children: [
-                _SlideOne(),
+                _SlideZero(
+                  onStateSelected: _onStateSelected,
+                  selectedState: _selectedState,
+                ),
+                _SlideOne(state: displayState),
                 _SlideTwo(),
                 _SlideThree(
+                  state: displayState,
                   onCitizen: () => _proceed(false),
                   onMember: () => _proceed(true),
                 ),
@@ -53,7 +130,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             ),
           ),
           // Dots
-          _DotsIndicator(count: 3, current: _currentPage),
+          _DotsIndicator(count: 4, current: _currentPage),
           const SizedBox(height: 16),
           if (!isLast)
             Padding(
@@ -65,29 +142,34 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                     onPressed: () => _proceed(false),
                     child: Text(
                       context.isKn ? 'ಬಿಡಿ' : 'Skip',
-                      style: const TextStyle(color: Colors.white54, fontSize: 15),
-                    ),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.accent,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 36, vertical: 14),
-                      elevation: 0,
-                    ),
-                    onPressed: () => _pageController.nextPage(
-                      duration: const Duration(milliseconds: 350),
-                      curve: Curves.easeInOut,
-                    ),
-                    child: Text(
-                      context.isKn ? 'ಮುಂದೆ  →' : 'Next  →',
                       style: const TextStyle(
-                          fontWeight: FontWeight.w800, fontSize: 15),
+                          color: Colors.white54, fontSize: 15),
                     ),
                   ),
+                  // Slide 0 auto-advances on state tap; no manual Next button
+                  if (_currentPage > 0)
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.accent,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 36, vertical: 14),
+                        elevation: 0,
+                      ),
+                      onPressed: () => _pageController.nextPage(
+                        duration: const Duration(milliseconds: 350),
+                        curve: Curves.easeInOut,
+                      ),
+                      child: Text(
+                        context.isKn ? 'ಮುಂದೆ  →' : 'Next  →',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w800, fontSize: 15),
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink(),
                 ],
               ),
             )
@@ -100,11 +182,127 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }
 }
 
-// ─── Slide 1: Rise for Karnataka ────────────────────────────────────────────
+// ─── Slide 0: Pick Your State ────────────────────────────────────────────────
 
-class _SlideOne extends StatelessWidget {
+class _SlideZero extends StatelessWidget {
+  final ValueChanged<String> onStateSelected;
+  final String selectedState;
+
+  const _SlideZero(
+      {required this.onStateSelected, required this.selectedState});
+
   @override
   Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              context.isKn ? 'ನಿಮ್ಮ\nರಾಜ್ಯ.' : 'YOUR\nSTATE.',
+              style: const TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: 1.5,
+                height: 1.05,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              context.isKn
+                  ? 'ನಿಮ್ಮ ರಾಜ್ಯವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ — ನಿಮ್ಮ ಚಳವಳಿ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ'
+                  : 'Select your home state — your movement starts here',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.white.withOpacity(0.55),
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 18),
+            Expanded(
+              child: GridView.builder(
+                padding: EdgeInsets.zero,
+                gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 9,
+                  crossAxisSpacing: 9,
+                  childAspectRatio: 3.4,
+                ),
+                itemCount: _kIndianStates.length,
+                itemBuilder: (_, i) {
+                  final state = _kIndianStates[i];
+                  final isSelected = state == selectedState;
+                  return GestureDetector(
+                    onTap: () => onStateSelected(state),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.accent
+                            : Colors.white.withOpacity(0.07),
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.accent
+                              : Colors.white.withOpacity(0.18),
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(11),
+                      ),
+                      child: Center(
+                        child: Text(
+                          state,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: isSelected
+                                ? Colors.white
+                                : Colors.white.withOpacity(0.80),
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                            fontSize: 12.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Slide 1: Rise for [State] ───────────────────────────────────────────────
+
+class _SlideOne extends StatelessWidget {
+  final String state;
+
+  const _SlideOne({required this.state});
+
+  bool get _isKarnataka => state == 'Karnataka';
+
+  @override
+  Widget build(BuildContext context) {
+    final nativeName = _kStateNativeNames[state] ?? state.toUpperCase();
+
+    // For Karnataka (Kannada locale): show Kannada headline, English accent
+    // For all others: show English headline, native script accent
+    final headline = (context.isKn && _isKarnataka)
+        ? 'ಕರ್ನಾಟಕಕ್ಕಾಗಿ\nಏಳಿ'
+        : 'RISE FOR\n${state.toUpperCase()}';
+    final accentLine = (context.isKn && _isKarnataka)
+        ? 'RISE FOR KARNATAKA'
+        : nativeName;
+    final body = (context.isKn && _isKarnataka)
+        ? 'ಪ್ರತಿ ಬೂತ್‌ನಿಂದ ರಾಜ್ಯ ರಾಜಧಾನಿಯವರೆಗೆ — ಒಂದೊಂದು ಧ್ವನಿಯಿಂದ ಪ್ರಾಮಾಣಿಕ ನಾಯಕತ್ವ ನಿರ್ಮಿಸೋಣ.'
+        : 'Building honest leadership from every booth to the state capital — one voice at a time.';
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -130,12 +328,12 @@ class _SlideOne extends StatelessWidget {
                 border: Border.all(
                     color: AppColors.accent.withOpacity(0.4), width: 2),
               ),
-              child: const Icon(Icons.shield,
-                  size: 64, color: AppColors.accent),
+              child:
+                  const Icon(Icons.shield, size: 64, color: AppColors.accent),
             ),
             const SizedBox(height: 32),
             Text(
-              context.isKn ? 'ಕರ್ನಾಟಕಕ್ಕಾಗಿ\nಏಳಿ' : 'RISE FOR\nKARNATAKA',
+              headline,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 42,
@@ -147,19 +345,18 @@ class _SlideOne extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              context.isKn ? 'RISE FOR KARNATAKA' : 'ಕರ್ನಾಟಕಕ್ಕಾಗಿ ಏಳಿ',
+              accentLine,
+              textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 color: AppColors.accent,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1.5,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
               ),
             ),
             const SizedBox(height: 24),
             Text(
-              context.isKn
-                  ? 'ಪ್ರತಿ ಬೂತ್‌ನಿಂದ ರಾಜ್ಯ ರಾಜಧಾನಿಯವರೆಗೆ — ಒಂದೊಂದು ಧ್ವನಿಯಿಂದ ಪ್ರಾಮಾಣಿಕ ನಾಯಕತ್ವ ನಿರ್ಮಿಸೋಣ.'
-                  : 'Building honest leadership from every booth to the state capital — one voice at a time.',
+              body,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 15,
@@ -253,13 +450,28 @@ class _SlideTwo extends StatelessWidget {
 // ─── Slide 3: Choose Your Role ───────────────────────────────────────────────
 
 class _SlideThree extends StatelessWidget {
+  final String state;
   final VoidCallback onCitizen;
   final VoidCallback onMember;
 
-  const _SlideThree({required this.onCitizen, required this.onMember});
+  const _SlideThree(
+      {required this.state,
+      required this.onCitizen,
+      required this.onMember});
+
+  bool get _isKarnataka => state == 'Karnataka';
 
   @override
   Widget build(BuildContext context) {
+    final headlineKn = _isKarnataka
+        ? 'ಕರ್ನಾಟಕಕ್ಕೆ ಹೇಗೆ\nಸೇವೆ ಸಲ್ಲಿಸುತ್ತೀರಿ?'
+        : 'HOW WILL YOU\nSERVE $state?';
+    final subKn = _isKarnataka
+        ? 'HOW WILL YOU SERVE KARNATAKA?'
+        : 'HOW WILL YOU SERVE ${state.toUpperCase()}?';
+    final headlineEn = 'HOW WILL YOU\nSERVE ${state.toUpperCase()}?';
+    final subEn = _isKarnataka ? 'ಕರ್ನಾಟಕಕ್ಕೆ ಹೇಗೆ ಸೇವೆ ಸಲ್ಲಿಸುತ್ತೀರಿ?' : '';
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -288,7 +500,7 @@ class _SlideThree extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              context.isKn ? 'ಕರ್ನಾಟಕಕ್ಕೆ ಹೇಗೆ\nಸೇವೆ ಸಲ್ಲಿಸುತ್ತೀರಿ?' : 'HOW WILL YOU\nSERVE KARNATAKA?',
+              context.isKn ? headlineKn : headlineEn,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 32,
@@ -299,15 +511,16 @@ class _SlideThree extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              context.isKn ? 'HOW WILL YOU SERVE KARNATAKA?' : 'ಕರ್ನಾಟಕಕ್ಕೆ ಹೇಗೆ ಸೇವೆ ಸಲ್ಲಿಸುತ್ತೀರಿ?',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 15,
-                color: AppColors.accent,
-                fontWeight: FontWeight.w500,
+            if ((context.isKn ? subKn : subEn).isNotEmpty)
+              Text(
+                context.isKn ? subKn : subEn,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: AppColors.accent,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
             const Spacer(),
             // Citizen card
             _ChoiceCard(

@@ -15,7 +15,7 @@ class KvsApp extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
-      title: 'Karnataka Vijaya Sena',
+      title: 'Yuva Bharata Sena',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       routerConfig: router,

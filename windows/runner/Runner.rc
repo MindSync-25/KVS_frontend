@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.karnatakavijayasena" "\0"
-            VALUE "FileDescription", "kvs" "\0"
+            VALUE "FileDescription", "Yuva Bharata Sena" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "kvs" "\0"
+            VALUE "InternalName", "Yuva Bharata Sena" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.karnatakavijayasena. All rights reserved." "\0"
             VALUE "OriginalFilename", "kvs.exe" "\0"
-            VALUE "ProductName", "kvs" "\0"
+            VALUE "ProductName", "Yuva Bharata Sena" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

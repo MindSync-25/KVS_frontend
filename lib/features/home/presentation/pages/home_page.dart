@@ -54,14 +54,14 @@ class _HomePageState extends ConsumerState<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Karnataka Vijaya Sena',
+                'Yuva Bharata Sena',
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.3),
               ),
               Text(
-                'ಕರ್ನಾಟಕ ವಿಜಯ ಸೇನಾ',
+                'ಯುವ ಭಾರತ ಸೇನಾ',
                 style: TextStyle(
                     fontSize: 10,
                     color: AppColors.accent,
@@ -1025,7 +1025,7 @@ class _MemberProgressCard extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      'Karnataka Vijaya Sena',
+                      'Yuva Bharata Sena',
                       style: TextStyle(
                           color: Colors.white38, fontSize: 10),
                     ),

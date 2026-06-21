@@ -79,7 +79,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'ಕರ್ನಾಟಕ ವಿಜಯ ಸೇನಾ',
+                  'ಯುವ ಭಾರತ ಸೇನಾ',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white.withOpacity(0.85),

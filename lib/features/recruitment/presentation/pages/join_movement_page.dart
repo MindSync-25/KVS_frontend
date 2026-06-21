@@ -1,10 +1,13 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/kvs_button.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+
+const _districtOptions = <String>[];
 
 class JoinMovementPage extends ConsumerWidget {
   const JoinMovementPage({super.key});
@@ -12,7 +15,7 @@ class JoinMovementPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
-    final referralCode = user?.referralCode ?? 'KVS-----';
+    final referralCode = user?.referralCode ?? 'YBS-----';
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -40,8 +43,11 @@ class JoinMovementPage extends ConsumerWidget {
               ),
               child: Column(
                 children: [
-                  const Icon(Icons.volunteer_activism,
-                      color: Colors.white, size: 48),
+                  const Icon(
+                    Icons.volunteer_activism,
+                    color: Colors.white,
+                    size: 48,
+                  ),
                   const SizedBox(height: AppSizes.md),
                   const Text(
                     'Grow the Movement',
@@ -81,7 +87,9 @@ class JoinMovementPage extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                ),
               ),
               child: Row(
                 children: [
@@ -97,8 +105,10 @@ class JoinMovementPage extends ConsumerWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.copy_outlined,
-                        color: AppColors.primary),
+                    icon: const Icon(
+                      Icons.copy_outlined,
+                      color: AppColors.primary,
+                    ),
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: referralCode));
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -120,12 +130,15 @@ class JoinMovementPage extends ConsumerWidget {
                 // TODO: Share plugin
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
-                        'Sharing: Join KVS with code $referralCode'),
+                    content: Text('Sharing: Join YBS with code $referralCode'),
                   ),
                 );
               },
             ),
+
+            const SizedBox(height: AppSizes.xl),
+
+            const _ProspectiveMemberForm(),
 
             const SizedBox(height: AppSizes.xl),
 
@@ -172,12 +185,140 @@ class JoinMovementPage extends ConsumerWidget {
             ...[
               ('Share your referral code with friends', Icons.share_outlined),
               ('They register with your code', Icons.app_registration_outlined),
-              ('You earn 50 karma points per verified member', Icons.emoji_events_outlined),
-            ].mapIndexed((i, item) => _StepRow(
-                  step: i + 1,
-                  text: item.$1,
-                  icon: item.$2,
-                )),
+              (
+                'You earn 50 karma points per verified member',
+                Icons.emoji_events_outlined,
+              ),
+            ].mapIndexed(
+              (i, item) => _StepRow(step: i + 1, text: item.$1, icon: item.$2),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProspectiveMemberForm extends StatefulWidget {
+  const _ProspectiveMemberForm();
+
+  @override
+  State<_ProspectiveMemberForm> createState() => _ProspectiveMemberFormState();
+}
+
+class _ProspectiveMemberFormState extends State<_ProspectiveMemberForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _talukController = TextEditingController();
+
+  String? _selectedDistrict;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _talukController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Member details captured')));
+
+    _formKey.currentState!.reset();
+    _nameController.clear();
+    _phoneController.clear();
+    _talukController.clear();
+    setState(() => _selectedDistrict = null);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasDistrictOptions = _districtOptions.isNotEmpty;
+
+    return Form(
+      key: _formKey,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(AppSizes.md),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Member Details',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: AppSizes.md),
+            TextFormField(
+              controller: _nameController,
+              textCapitalization: TextCapitalization.words,
+              validator: Validators.name,
+              decoration: const InputDecoration(
+                hintText: 'Name',
+                prefixIcon: Icon(Icons.person_outline),
+              ),
+            ),
+            const SizedBox(height: AppSizes.md),
+            TextFormField(
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              validator: Validators.phone,
+              decoration: const InputDecoration(
+                hintText: 'Phone number',
+                prefixIcon: Icon(Icons.phone_outlined),
+              ),
+            ),
+            const SizedBox(height: AppSizes.md),
+            DropdownButtonFormField<String>(
+              initialValue: _selectedDistrict,
+              decoration: const InputDecoration(
+                hintText: 'District',
+                prefixIcon: Icon(Icons.location_city_outlined),
+              ),
+              items: _districtOptions
+                  .map(
+                    (district) => DropdownMenuItem(
+                      value: district,
+                      child: Text(district),
+                    ),
+                  )
+                  .toList(),
+              onChanged: hasDistrictOptions
+                  ? (value) => setState(() => _selectedDistrict = value)
+                  : null,
+              validator: hasDistrictOptions
+                  ? (value) => value == null ? 'Please select a district' : null
+                  : null,
+            ),
+            const SizedBox(height: AppSizes.md),
+            TextFormField(
+              controller: _talukController,
+              textCapitalization: TextCapitalization.words,
+              validator: (value) => Validators.required(value, 'Taluk'),
+              decoration: const InputDecoration(
+                hintText: 'Taluk',
+                prefixIcon: Icon(Icons.map_outlined),
+              ),
+            ),
+            const SizedBox(height: AppSizes.lg),
+            KvsButton(
+              label: 'Submit Details',
+              icon: Icons.person_add_alt_1,
+              onPressed: _submit,
+            ),
           ],
         ),
       ),
@@ -204,23 +345,29 @@ class _RecruitCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSizes.md),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         ),
         child: Column(
           children: [
             Icon(icon, color: color, size: 24),
             const SizedBox(height: 6),
-            Text(value,
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: color)),
-            Text(label,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary)),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: color,
+              ),
+            ),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 11,
+                color: AppColors.textSecondary,
+              ),
+            ),
           ],
         ),
       ),
@@ -233,11 +380,7 @@ class _StepRow extends StatelessWidget {
   final String text;
   final IconData icon;
 
-  const _StepRow({
-    required this.step,
-    required this.text,
-    required this.icon,
-  });
+  const _StepRow({required this.step, required this.text, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -253,19 +396,26 @@ class _StepRow extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Center(
-              child: Text('$step',
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700)),
+              child: Text(
+                '$step',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
           const SizedBox(width: AppSizes.md),
           Icon(icon, color: AppColors.primary, size: 20),
           const SizedBox(width: AppSizes.sm),
           Expanded(
-            child: Text(text,
-                style: const TextStyle(
-                    fontSize: 13, color: AppColors.textPrimary)),
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textPrimary,
+              ),
+            ),
           ),
         ],
       ),

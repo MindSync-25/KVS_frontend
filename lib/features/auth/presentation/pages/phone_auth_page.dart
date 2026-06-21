@@ -91,7 +91,7 @@ class _PhoneAuthPageState extends ConsumerState<PhoneAuthPage> {
                       ),
                       const SizedBox(height: 16),
                       const Text(
-                        'Karnataka Vijaya Sena',
+                        'Yuva Bharata Sena',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -259,8 +259,8 @@ class _PhoneAuthPageState extends ConsumerState<PhoneAuthPage> {
                                       padding: const EdgeInsets.only(top: 12.0),
                                       child: Text(
                                         context.isKn
-                                            ? 'ಕರ್ನಾಟಕ ವಿಜಯ ಸೇನಾದ ಸೇವಾ ನಿಯಮಗಳು ಮತ್ತು ಗೌಪ್ಯತಾ ನೀತಿಗೆ ನಾನು ಒಪ್ಪುತ್ತೇನೆ'
-                                            : 'I agree to the Terms of Service and Privacy Policy of Karnataka Vijaya Sena',
+                                            ? 'ಯುವ ಭಾರತ ಸೇನಾದ ಸೇವಾ ನಿಯಮಗಳು ಮತ್ತು ಗೌಪ್ಯತಾ ನೀತಿಗೆ ನಾನು ಒಪ್ಪುತ್ತೇನೆ'
+                                            : 'I agree to the Terms of Service and Privacy Policy of Yuva Bharata Sena',
                                         style: const TextStyle(
                                           color: AppColors.textSecondary,
                                           fontSize: 12,

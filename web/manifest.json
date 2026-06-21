@@ -1,11 +1,11 @@
 {
-    "name": "kvs",
-    "short_name": "kvs",
+    "name": "Yuva Bharata Sena",
+    "short_name": "YBS",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Yuva Bharata Sena political movement app.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
